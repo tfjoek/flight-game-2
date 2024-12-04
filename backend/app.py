@@ -1,7 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from database import create_connection
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend", static_url_path="")
+
+# Reitti HTML-etusivulle
+@app.route('/')
+def serve_html():
+    return send_from_directory('../frontend', 'index.html')
 
 # Pelaajan tilan haku
 @app.route('/player/<int:player_id>', methods=['GET'])
@@ -18,45 +23,20 @@ def get_player_status(player_id):
             return jsonify(player)
     return jsonify({"error": "Player not found"}), 404
 
-# Hyökkäystoiminto
-@app.route('/attack', methods=['POST'])
-def attack_airport():
-    data = request.json
-    player_id = data.get('player_id')
-    destination_icao = data.get('destination_icao')
-
-    # Lisää hyökkäyslogiikka tähän 
-    return jsonify({"status": "attack logic not implemented yet"}), 501
-
-# Kaupan avaaminen
-@app.route('/shop/<int:player_id>', methods=['GET'])
-def open_shop(player_id):
+# Satunnainen lentokenttä
+@app.route('/random-airport', methods=['GET'])
+def random_airport():
     conn = create_connection()
     if conn:
         cursor = conn.cursor(dictionary=True)
-        query = """
-            SELECT id, name, description, price FROM item ORDER BY RAND() LIMIT 2
-        """
+        query = "SELECT ident, name, owner FROM airport ORDER BY RAND() LIMIT 1"
         cursor.execute(query)
-        items = cursor.fetchall()
+        airport = cursor.fetchone()
         cursor.close()
         conn.close()
-        return jsonify(items)
-    return jsonify({"error": "Unable to fetch shop items"}), 500
+        if airport:
+            return jsonify(airport)
+    return jsonify({"error": "No airports found"}), 404
 
-# Lentokenttien listaaminen
-@app.route('/airports', methods=['GET'])
-def list_airports():
-    conn = create_connection()
-    if conn:
-        cursor = conn.cursor(dictionary=True)
-        query = "SELECT ident, name, owner FROM airport ORDER BY name"
-        cursor.execute(query)
-        airports = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return jsonify(airports)
-    return jsonify({"error": "Unable to fetch airports"}), 500
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

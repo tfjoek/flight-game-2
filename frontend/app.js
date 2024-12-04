@@ -1,3 +1,4 @@
+// Hae pelaajan tila
 function fetchPlayerStatus() {
     fetch('http://127.0.0.1:5000/player/1')
         .then(response => response.json())
@@ -8,6 +9,25 @@ function fetchPlayerStatus() {
         .catch(error => console.error('Error:', error));
 }
 
+// Hae satunnainen lentokenttä
+function fetchRandomAirport() {
+    fetch('http://127.0.0.1:5000/random-airport')
+        .then(response => response.json())
+        .then(data => {
+            const airportDiv = document.getElementById('random-airport');
+            if (data.error) {
+                airportDiv.innerText = data.error;
+            } else {
+                airportDiv.innerText = 
+                    `Airport: ${data.name} (${data.ident}), Owner: ${data.owner}`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+
+// Avaa kauppa
 function fetchShop() {
     fetch('http://127.0.0.1:5000/shop/1')
         .then(response => response.json())
