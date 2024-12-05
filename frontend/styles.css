@@ -5,19 +5,14 @@ body {
     color: #333;
 }
 
-h1 {
-    margin-top: 20px;
-    font-size: 36px;
-}
-
 button {
-    margin: 15px;
-    padding: 15px 30px;
-    font-size: 18px;
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
@@ -25,6 +20,11 @@ button:hover {
     background-color: #0056b3;
 }
 
-#main-menu, #game-screen {
-    margin-top: 50px;
+div {
+    margin: 20px auto;
+    max-width: 600px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

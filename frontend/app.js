@@ -1,18 +1,4 @@
-// Päävalikon toiminnot
-function startGame() {
-    document.getElementById("main-menu").style.display = "none";
-    document.getElementById("game-screen").style.display = "block";
-}
-
-function openSettings() {
-    alert("settings prompt");
-}
-
-function quitGame() {
-    alert("quit game prompt!");
-}
-
-// Pelaajan tila
+// Hae pelaajan tila
 function fetchPlayerStatus() {
     fetch('http://127.0.0.1:5000/player/1')
         .then(response => response.json())
@@ -28,17 +14,18 @@ function fetchRandomAirport() {
     fetch('http://127.0.0.1:5000/random-airport')
         .then(response => response.json())
         .then(data => {
+            const airportDiv = document.getElementById('random-airport');
             if (data.error) {
-                document.getElementById('random-airport').innerText = data.error;
+                airportDiv.innerText = data.error;
             } else {
-                document.getElementById('random-airport').innerText = 
+                airportDiv.innerText = 
                     `Airport: ${data.name} (${data.ident}), Owner: ${data.owner}`;
             }
         })
         .catch(error => console.error('Error:', error));
 }
 
-// Kauppa
+// hello i am a temporary function for what could be a shop functionality please ignore me
 function fetchShop() {
     fetch('http://127.0.0.1:5000/shop/1')
         .then(response => response.json())
@@ -49,4 +36,9 @@ function fetchShop() {
             ).join('');
         })
         .catch(error => console.error('Error:', error));
+}
+
+// MOI MÄ AVAAN KARTAN  
+function openMap() {
+    window.location.href = '/map'; // Navigates to the map page
 }
