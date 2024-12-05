@@ -1,44 +1,58 @@
-    // Hae pelaajan tila
-    function fetchPlayerStatus() {
-        fetch('http://127.0.0.1:5000/player/1')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('player-status').innerText =
-                    `Location: ${data.location}, Fuel: ${data.fuel}, War Points: ${data.war_points}`;
-            })
-            .catch(error => console.error('Error:', error));
-    }
+const startButton = document.getElementById("start")
 
-    // Hae satunnainen lentokenttä
-    function fetchRandomAirport() {
-        fetch('http://127.0.0.1:5000/random-airport')
-            .then(response => response.json())
-            .then(data => {
-                const airportDiv = document.getElementById('random-airport');
-                if (data.error) {
-                    airportDiv.innerText = data.error;
-                } else {
-                    airportDiv.innerText = 
-                        `Airport: ${data.name} (${data.ident}), Owner: ${data.owner}`;
+startButton.addEventListener("click", () => {
+    startButton.remove()
+
+    const yesButton = document.createElement("button")
+    const noButton = document.createElement("button")
+
+    yesButton.textContent = "Kyllä"
+    noButton.textContent = "Ei"
+
+    yesButton.addEventListener("click", () => {
+        fetch("story.txt")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Tarinaa ei löytynyt!")
                 }
+                return response.text()
             })
-            .catch(error => console.error('Error:', error));
-    }
+            .then (story => {
+                const storyDiv = document.getElementById("story")
+                storyDiv.textContent = story
 
-    // hello i am a temporary function for what could be a shop functionality please ignore me
-    function fetchShop() {
-        fetch('http://127.0.0.1:5000/shop/1')
-            .then(response => response.json())
-            .then(data => {
-                const shopDiv = document.getElementById('shop');
-                shopDiv.innerHTML = data.map(item => 
-                    `<div>${item.name}: ${item.description} (${item.price} points)</div>`
-                ).join('');
+                yesButton.remove()
+                noButton.remove()
+
+                const skipButton = document.createElement("button")
+                skipButton.textContent = "Jatka peliin"
+
+                skipButton.addEventListener("click", () => {
+                    storyDiv.textContent = "peli jatkuu..." 
+                    skipButton.remove()
+                })
+                document.body.append(skipButton)
+            })    
+            .catch(error => {
+                console.error(error)
             })
-            .catch(error => console.error('Error:', error));
-    }
+    })
+    noButton.addEventListener("click", () => {
+        const storyDiv = document.getElementById("story")
+        storyDiv.textContent = "Et halunnut lukea tarinaa :("
 
-    // MOI MÄ AVAAN KARTAN  
-    function openMap() {
-        window.location.href = '/map'; // Navigates to the map page
-    }
+        yesButton.remove()
+        noButton.remove()
+
+        const skipButton = document.createElement("button")
+        skipButton.textContent = "Jatka peliin"
+
+        skipButton.addEventListener("click", () => {
+            storyDiv.textContent = "peli jatkuu..."
+            skipButton.remove()
+        })
+        document.body.append(skipButton)
+    })
+    document.body.append(yesButton)
+    document.body.append(noButton)
+})
