@@ -49,7 +49,7 @@ def get_locations():
     conn = create_connection()
     if conn:
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT name, latitude_deg, longitude_deg FROM airport"
+        query = "SELECT name, latitude_deg, longitude_deg, owner FROM airport"
         cursor.execute(query)
         locations = cursor.fetchall()
         cursor.close()
