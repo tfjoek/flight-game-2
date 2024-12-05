@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>KARTTA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Game - Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -12,10 +14,16 @@
         <div>
             <a href="/">Home</a>
             <a href="/map">Map</a>
-            <a href="#hi">NOTHING BURGER</a>
         </div>
         <button class="btn-home" onclick="goHome()">Go to Home Page</button>
     </nav>
+
+    <div id="stats-box">
+        <h2>Player Stats</h2>
+        <div id="player-stats">
+            Loading player stats...
+        </div>
+    </div>
 
     <div id="map"></div>
 
