@@ -4,50 +4,91 @@ function goHome() {
 
 var map = L.map('map').setView([64, 25], 6);
 
-// Add OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Playe stat rs
+let playerLocation = null;
+
+// Hae pelaajan tilastot
 function fetchPlayerStats(playerId) {
     fetch(`/player/${playerId}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                document.getElementById('player-stats').innerText = "Error fetching player stats.";
+                console.error("Error fetching player stats:", data.error);
             } else {
+                playerLocation = data.location.trim();
+                console.log(`Player location fetched: ${playerLocation}`);
                 document.getElementById('player-stats').innerHTML = `
-                    <p><b>Location:</b> ${data.location}</p>
-                    <p><b>Fuel:</b> ${data.fuel} km</p>
-                    <p><b>War Points:</b> ${data.war_points}</p>
+                    <div class="stat location"><b>Location:</b> ${data.location}</div>
+                    <div class="stat fuel"><b>Fuel:</b> ${data.fuel} km</div>
+                    <div class="stat war-points"><b>War Points:</b> ${data.war_points}</div>
                 `;
+                updateControlStats(); // Päivitä kontrollitiedot
+                updateMapMarkers(); // Päivitä markerit
             }
         })
-        .catch(error => console.error("Error fetching player stats:", error));
+        .catch(error => {
+            console.error("Error fetching player stats:", error);
+        });
 }
 
-// Fetch and add markers 
-$.getJSON('/locations', function(data) {
-    if (data.error) {
-        alert(data.error);
-    } else {
+// Päivitä lentokenttien kontrollitiedot
+function updateControlStats() {
+    $.getJSON('/locations', function(data) {
+        let finlandAirports = 0;
+        let russiaAirports = 0;
+
         data.forEach(function(location) {
-            const ownerColor = location.owner === 'Russia' ? 'red' : 'blue';
+            if (location.owner === 'Finland') {
+                finlandAirports++;
+            } else if (location.owner === 'Russia') {
+                russiaAirports++;
+            }
+        });
+
+        const totalAirports = finlandAirports + russiaAirports;
+        const liberationPercentage = ((finlandAirports / totalAirports) * 100).toFixed(2);
+
+        document.getElementById('control-stats').innerHTML = `
+            <div class="stat finland">Finland Airports: ${finlandAirports}</div>
+            <div class="stat russia">Russia Airports: ${russiaAirports}</div>
+            <div class="stat liberation">Liberation: ${liberationPercentage}%</div>
+        `;
+    }).fail(function() {
+        alert("Failed to load location data.");
+    });
+}
+
+// Päivitä markerit kartalle
+function updateMapMarkers() {
+    $.getJSON('/locations', function(data) {
+        data.forEach(function(location) {
+            let markerColor;
+
+            if (playerLocation && location.ident === playerLocation) {
+                markerColor = 'green';
+            } else if (location.owner === 'Finland') {
+                markerColor = 'blue';
+            } else {
+                markerColor = 'red';
+            }
+
             const marker = L.marker([location.latitude_deg, location.longitude_deg], {
                 icon: L.divIcon({
                     className: 'custom-icon',
-                    html: `<div style="background-color:${ownerColor}; width:10px; height:10px; border-radius:50%;"></div>`
+                    html: `<div style="background-color:${markerColor}; width:10px; height:10px; border-radius:50%;"></div>`
                 })
             }).addTo(map);
 
-            // Owner popup
             marker.bindPopup(`<b>${location.name}</b><br>Owner: ${location.owner}`);
         });
-    }
-}).fail(function() {
-    alert("Failed to load location data.");
-});
+    }).fail(function() {
+        alert("Failed to load location data.");
+    });
+}
 
-fetchPlayerStats(1); // Player id pitais olla 1 by default!
+// Alusta pelaajan tilastot ja kartta
+fetchPlayerStats(1);

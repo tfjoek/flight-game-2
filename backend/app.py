@@ -49,7 +49,7 @@ def get_locations():
     conn = create_connection()
     if conn:
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT name, latitude_deg, longitude_deg, owner FROM airport"
+        query = "SELECT ident, name, latitude_deg, longitude_deg, owner FROM airport"
         cursor.execute(query)
         locations = cursor.fetchall()
         cursor.close()
@@ -57,6 +57,7 @@ def get_locations():
         if locations:
             return jsonify(locations)
     return jsonify({"error": "No locations found"}), 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)

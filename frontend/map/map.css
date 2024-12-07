@@ -1,8 +1,8 @@
-/* General styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     overflow: hidden;
+    height: 100vh;
 }
 
 nav {
@@ -12,6 +12,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 1000;
 }
 
 nav a {
@@ -37,16 +38,15 @@ nav a:hover {
     background-color: #0056b3;
 }
 
-/* Map styles */
 #map {
     position: absolute;
     top: 50px;
     left: 300px;
     width: calc(100% - 300px);
     height: calc(100% - 50px);
+    z-index: 1;
 }
 
-/* Player stats box styles */
 #stats-box {
     position: absolute;
     top: 50px;
@@ -60,9 +60,25 @@ nav a:hover {
     padding: 20px;
 }
 
+.stat {
+    margin-bottom: 5px; /* Pienempi väli jokaisen statin välillä */
+}
+
+#player-stats, #control-stats {
+    margin-bottom: 20px; /* Yhtenäinen väli osioiden välillä */
+}
+
 #stats-box h2 {
     margin-top: 0;
     font-size: 20px;
-    border-bottom: 2px solid #007BFF;
+    border-bottom: 2px solid #007BFF; /* Sininen viiva */
     padding-bottom: 10px;
 }
+
+
+.custom-icon div {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
