@@ -10,8 +10,28 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 let playerLocation = null;
+function resetGame() {
+    fetch('/reset', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Game reset to default state.");
+                fetchPlayerStats(1); 
+                updateMapMarkers();  
+                updateControlStats(); 
+            } else {
+                console.error("Failed to reset game:", data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error resetting game:", error);
+        });
+}
 
-// Hae pelaajan tilastot
+// Suorita reset, kun karttasivu ladataan
+resetGame();
+
+// Hae pelaajan sijainti ja tiedot
 function fetchPlayerStats(playerId) {
     fetch(`/player/${playerId}`)
         .then(response => response.json())
@@ -26,8 +46,7 @@ function fetchPlayerStats(playerId) {
                     <div class="stat fuel"><b>Fuel:</b> ${data.fuel} km</div>
                     <div class="stat war-points"><b>War Points:</b> ${data.war_points}</div>
                 `;
-                updateControlStats(); // Päivitä kontrollitiedot
-                updateMapMarkers(); // Päivitä markerit
+                updateMapMarkers();
             }
         })
         .catch(error => {
@@ -35,60 +54,85 @@ function fetchPlayerStats(playerId) {
         });
 }
 
-// Päivitä lentokenttien kontrollitiedot
-function updateControlStats() {
-    $.getJSON('/locations', function(data) {
-        let finlandAirports = 0;
-        let russiaAirports = 0;
-
-        data.forEach(function(location) {
-            if (location.owner === 'Finland') {
-                finlandAirports++;
-            } else if (location.owner === 'Russia') {
-                russiaAirports++;
-            }
-        });
-
-        const totalAirports = finlandAirports + russiaAirports;
-        const liberationPercentage = ((finlandAirports / totalAirports) * 100).toFixed(2);
-
-        document.getElementById('control-stats').innerHTML = `
-            <div class="stat finland">Finland Airports: ${finlandAirports}</div>
-            <div class="stat russia">Russia Airports: ${russiaAirports}</div>
-            <div class="stat liberation">Liberation: ${liberationPercentage}%</div>
-        `;
-    }).fail(function() {
-        alert("Failed to load location data.");
-    });
-}
-
-// Päivitä markerit kartalle
+// Päivitä kartan markerit
 function updateMapMarkers() {
     $.getJSON('/locations', function(data) {
-        data.forEach(function(location) {
-            let markerColor;
+        console.log("Locations fetched:", data);
+        if (data.error) {
+            alert(data.error);
+        } else {
+            data.forEach(function(location) {
+                let markerColor;
 
-            if (playerLocation && location.ident === playerLocation) {
-                markerColor = 'green';
-            } else if (location.owner === 'Finland') {
-                markerColor = 'blue';
-            } else {
-                markerColor = 'red';
-            }
+                // Värit kartalla
+                if (playerLocation && location.ident === playerLocation) {
+                    markerColor = 'green';
+                } else if (location.owner === 'Finland') {
+                    markerColor = 'blue';
+                } else {
+                    markerColor = 'red';
+                }
 
-            const marker = L.marker([location.latitude_deg, location.longitude_deg], {
-                icon: L.divIcon({
-                    className: 'custom-icon',
-                    html: `<div style="background-color:${markerColor}; width:10px; height:10px; border-radius:50%;"></div>`
-                })
-            }).addTo(map);
+                // Luo marker
+                const marker = L.marker([location.latitude_deg, location.longitude_deg], {
+                    icon: L.divIcon({
+                        className: 'custom-icon',
+                        html: `<div style="background-color:${markerColor}; width:10px; height:10px; border-radius:50%;"></div>`
+                    })
+                }).addTo(map);
 
-            marker.bindPopup(`<b>${location.name}</b><br>Owner: ${location.owner}`);
-        });
+                // Lisää popup ja hyökkäyspainike, jos lentokenttä on Venäjän hallinnassa
+                const popupContent = `<b>${location.name}</b><br>Owner: ${location.owner}`;
+                if (location.owner === 'Russia') {
+                    marker.bindPopup(`${popupContent}<br><button onclick="attackAirport('${location.ident}')">Attack</button>`);
+                } else {
+                    marker.bindPopup(popupContent);
+                }
+            });
+        }
     }).fail(function() {
         alert("Failed to load location data.");
     });
 }
 
-// Alusta pelaajan tilastot ja kartta
-fetchPlayerStats(1);
+function updateControlStats() {
+    $.getJSON('/locations', function(data) {
+        if (data.error) {
+            console.error("Error fetching control stats:", data.error);
+        } else {
+            const totalAirports = data.length;
+            const finlandAirports = data.filter(location => location.owner === 'Finland').length;
+            const russiaAirports = totalAirports - finlandAirports;
+            const liberationPercentage = ((finlandAirports / totalAirports) * 100).toFixed(2);
+
+            document.getElementById('control-stats').innerHTML = `
+                <div><b>Finland Airports:</b> ${finlandAirports}</div>
+                <div><b>Russia Airports:</b> ${russiaAirports}</div>
+                <div><b>Liberation:</b> ${liberationPercentage}%</div>
+            `;
+        }
+    }).fail(function() {
+        console.error("Failed to fetch control stats.");
+    });
+}
+
+function attackAirport(airportIdent) {
+    fetch(`/attack/${airportIdent}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`hyokkasit ja nyt suomen hallinassa on: ${data.airport_name}`);
+                updateMapMarkers(); // Päivitä kartan markerit
+                updateControlStats(); // Päivitä Control Stats
+            } else {
+                alert("Attack failed!");
+            }
+        })
+        .catch(error => {
+            console.error("Error attacking airport:", error);
+        });
+}
+
+
+updateControlStats();
+fetchPlayerStats(1); // Pelaaja ID = 1 default
