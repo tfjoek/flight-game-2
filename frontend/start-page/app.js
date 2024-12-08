@@ -9,7 +9,7 @@ startButton.addEventListener("click", () => {
     exitButton.remove()
 
     const readText = document.createElement("p")
-    readText.textContent = "Haluatko lukea tarinan?"
+    readText.textContent = "Haluatko katsoa videon?"
     readText.classList.add("storytext")
 
     const yesButton = document.createElement("button")
@@ -77,12 +77,6 @@ startButton.addEventListener("click", () => {
     document.body.append(yesButton)
     document.body.append(noButton)
 })
-
-// Event listener
-startVideoButton.addEventListener('click', function() {
-    // Vie video html
-    window.location.href = 'story-video.html'; 
-});
 
 exitButton.addEventListener("click" , () => {
     close()
