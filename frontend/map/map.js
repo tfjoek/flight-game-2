@@ -37,27 +37,26 @@ function fetchPlayerStats(playerId) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                console.error("Error fetching player stats:", data.error);
+                console.error("Virhe pelaajan tietojen haussa:", data.error);
             } else {
                 playerLocation = data.location.trim();
-                console.log(`Player location fetched: ${playerLocation}`);
+                console.log(`Pelaajan sijainti haettu: ${playerLocation}`);
                 document.getElementById('player-stats').innerHTML = `
-                    <div class="stat location"><b>Location:</b> ${data.location}</div>
-                    <div class="stat fuel"><b>Fuel:</b> ${data.fuel} km</div>
-                    <div class="stat war-points"><b>War Points:</b> ${data.war_points}</div>
+                    <div class="stat location"><b>Sijainti:</b> ${data.location}</div>
+                    <div class="stat fuel"><b>Polttoaine:</b> ${data.fuel} km</div>
+                    <div class="stat war-points"><b>Sotapisteet:</b> ${data.war_points}</div>
                 `;
                 updateMapMarkers();
             }
         })
         .catch(error => {
-            console.error("Error fetching player stats:", error);
+            console.error("Virhe pelaajan tietojen haussa:", error);
         });
 }
 
-// Päivitä kartan markerit
 function updateMapMarkers() {
     $.getJSON('/locations', function(data) {
-        console.log("Locations fetched:", data);
+        console.log("Locations fetched:", data); 
         if (data.error) {
             alert(data.error);
         } else {
@@ -66,14 +65,13 @@ function updateMapMarkers() {
 
                 // Värit kartalla
                 if (playerLocation && location.ident === playerLocation) {
-                    markerColor = 'green';
+                    markerColor = 'green'; 
                 } else if (location.owner === 'Finland') {
-                    markerColor = 'blue';
+                    markerColor = 'blue'; 
                 } else {
-                    markerColor = 'red';
+                    markerColor = 'red'; 
                 }
 
-                // Luo marker
                 const marker = L.marker([location.latitude_deg, location.longitude_deg], {
                     icon: L.divIcon({
                         className: 'custom-icon',
@@ -81,13 +79,19 @@ function updateMapMarkers() {
                     })
                 }).addTo(map);
 
-                // Lisää popup ja hyökkäyspainike, jos lentokenttä on Venäjän hallinnassa
-                const popupContent = `<b>${location.name}</b><br>Owner: ${location.owner}`;
-                if (location.owner === 'Russia') {
-                    marker.bindPopup(`${popupContent}<br><button onclick="attackAirport('${location.ident}')">Attack</button>`);
-                } else {
-                    marker.bindPopup(popupContent);
-                }
+                // Lisätään tähtimäärä ja kontrolliteksti
+                const controlText = location.owner === 'Russia' ? 
+                    "Venäjän hallinnassa" : 
+                    "Sinun hallinnassasi";
+
+                const difficultyStars = "★".repeat(location.difficulty);
+
+                // Päivitetään popup
+                marker.bindPopup(`
+                    <b>${location.name} ${difficultyStars}</b><br>
+                    ${controlText}<br>
+                    <button onclick="attackAirport('${location.ident}')">Attack</button>
+                `);
             });
         }
     }).fail(function() {
@@ -98,7 +102,7 @@ function updateMapMarkers() {
 function updateControlStats() {
     $.getJSON('/locations', function(data) {
         if (data.error) {
-            console.error("Error fetching control stats:", data.error);
+            console.error("Virhe hallintatilastojen haussa:", data.error);
         } else {
             const totalAirports = data.length;
             const finlandAirports = data.filter(location => location.owner === 'Finland').length;
@@ -106,16 +110,15 @@ function updateControlStats() {
             const liberationPercentage = ((finlandAirports / totalAirports) * 100).toFixed(2);
 
             document.getElementById('control-stats').innerHTML = `
-                <div><b>Finland Airports:</b> ${finlandAirports}</div>
-                <div><b>Russia Airports:</b> ${russiaAirports}</div>
-                <div><b>Liberation:</b> ${liberationPercentage}%</div>
+                <div><b>Suomen Lentokentät:</b> ${finlandAirports}</div>
+                <div><b>Venäjän Lentokentät:</b> ${russiaAirports}</div>
+                <div><b>Vapautus:</b> ${liberationPercentage}%</div>
             `;
         }
     }).fail(function() {
-        console.error("Failed to fetch control stats.");
+        console.error("Hallintatilastojen haku epäonnistui.");
     });
 }
-
 function attackAirport(airportIdent) {
     fetch(`/attack/${airportIdent}`, { method: 'POST' })
         .then(response => response.json())
