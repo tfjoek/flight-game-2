@@ -79,6 +79,16 @@ settingsButton.addEventListener("click" , () => {
     document.body.append(settings)
 })
 
+exitButton.addEventListener("click" , () => {
+    close()
+})
+
+// store button
+document.getElementById('store').addEventListener('click', function() {
+    // Redirect the user to 'store.html'
+    window.location.href = 'store.html';
+});
+
 exitButton.addEventListener("click", () => {
     close();
 });
