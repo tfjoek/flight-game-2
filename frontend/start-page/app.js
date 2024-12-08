@@ -68,6 +68,17 @@ startButton.addEventListener("click", () => {
     });
 });
 
+settingsButton.addEventListener("click" , () => {
+    startButton.remove()
+    exitButton.remove()
+    settingsButton.remove()
+    
+
+    const settings = document.createElement("h3")
+    settings.textContent = "Asetukset"
+    document.body.append(settings)
+})
+
 exitButton.addEventListener("click", () => {
     close();
 });
