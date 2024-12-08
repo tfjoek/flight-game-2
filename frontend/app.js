@@ -14,7 +14,7 @@ function quitGame() {
 
 // Pelaajan tila
 function fetchPlayerStatus() {
-    fetch('http://127.0.0.1:5000/player/1')
+    fetch('/player/1')
         .then(response => response.json())
         .then(data => {
             document.getElementById('player-status').innerText =
@@ -25,7 +25,7 @@ function fetchPlayerStatus() {
 
 // Hae satunnainen lentokenttä
 function fetchRandomAirport() {
-    fetch('http://127.0.0.1:5000/random-airport')
+    fetch('/random-airport')
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -40,7 +40,7 @@ function fetchRandomAirport() {
 
 // Kauppa
 function fetchShop() {
-    fetch('http://127.0.0.1:5000/shop/1')
+    fetch('/shop/1')
         .then(response => response.json())
         .then(data => {
             const shopDiv = document.getElementById('shop');
@@ -49,4 +49,8 @@ function fetchShop() {
             ).join('');
         })
         .catch(error => console.error('Error:', error));
+}
+
+function openMap() {
+    window.location.href = "/map"
 }

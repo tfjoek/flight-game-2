@@ -21,7 +21,7 @@ def reset_game():
         cursor.execute("UPDATE airport SET owner = 'Finland' WHERE ident = 'EFTP'")
 
         # Palauttaa pelaajan sijainnin, polttoaineen ja sotapisteet oletusarvoihin
-        cursor.execute("UPDATE game SET location = 'EFTP', fuel = 250, war_points = 0 WHERE id = 1")
+        cursor.execute("UPDATE game SET location = 'EFTP', fuel = 500, war_points = 0 WHERE id = 1")
 
         conn.commit()
         cursor.close()

@@ -80,7 +80,7 @@ function updateMapMarkers() {
                 const marker = L.marker([location.latitude_deg, location.longitude_deg], {
                     icon: L.divIcon({
                         className: 'custom-icon',
-                        html: `<div style="background-color:${markerColor}; width:10px; height:10px; border-radius:50%;"></div>`
+                        html: `<div style="background-color:${markerColor}; width:15px; height:15px; border-radius:50%;"></div>`
                     })
                 }).addTo(map);
 
