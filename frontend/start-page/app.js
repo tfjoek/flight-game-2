@@ -1,4 +1,5 @@
 const startButton = document.getElementById("start")
+const startVideoButton = document.getElementById("start-video")
 const settingsButton = document.getElementById("settings")
 const exitButton = document.getElementById("exit")
 
@@ -76,6 +77,12 @@ startButton.addEventListener("click", () => {
     document.body.append(yesButton)
     document.body.append(noButton)
 })
+
+// Event listener
+startVideoButton.addEventListener('click', function() {
+    // Vie video html
+    window.location.href = 'story-video.html'; 
+});
 
 exitButton.addEventListener("click" , () => {
     close()
