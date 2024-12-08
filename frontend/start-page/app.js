@@ -1,10 +1,15 @@
 const startButton = document.getElementById("start")
+const settingsButton = document.getElementById("settings")
+const exitButton = document.getElementById("exit")
 
 startButton.addEventListener("click", () => {
     startButton.remove()
+    settingsButton.remove()
+    exitButton.remove()
 
     const readText = document.createElement("p")
     readText.textContent = "Haluatko lukea tarinan?"
+    readText.classList.add("storytext")
 
     const yesButton = document.createElement("button")
     const noButton = document.createElement("button")
@@ -19,6 +24,8 @@ startButton.addEventListener("click", () => {
 
     yesButton.addEventListener("click", () => {
         readText.remove()
+        settingsButton.remove()
+        exitButton.remove()
         fetch("story.txt")
             .then(response => {
                 if (!response.ok) {
@@ -35,6 +42,7 @@ startButton.addEventListener("click", () => {
 
                 const skipButton = document.createElement("button")
                 skipButton.textContent = "Jatka peliin"
+                skipButton.classList.add("buton")
 
                 skipButton.addEventListener("click", () => {
                     storyDiv.textContent = "peli jatkuu..." 
@@ -48,10 +56,9 @@ startButton.addEventListener("click", () => {
     })
     noButton.addEventListener("click", () => {
         readText.remove()
-        const storyDiv = document.getElementById("story")
-        storyDiv.textContent = "Et halunnut lukea tarinaa :("
+        settingsButton.remove()
+        exitButton.remove()
         
-
         yesButton.remove()
         noButton.remove()
 
@@ -60,6 +67,7 @@ startButton.addEventListener("click", () => {
         skipButton.classList.add("buton")
 
         skipButton.addEventListener("click", () => {
+            const storyDiv = document.getElementById("story")
             storyDiv.textContent = "peli jatkuu..."
             skipButton.remove()
         })
@@ -67,4 +75,8 @@ startButton.addEventListener("click", () => {
     })
     document.body.append(yesButton)
     document.body.append(noButton)
+})
+
+exitButton.addEventListener("click" , () => {
+    close()
 })
