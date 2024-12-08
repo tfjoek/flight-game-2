@@ -1,4 +1,5 @@
 const startButton = document.getElementById("start")
+const startVideoButton = document.getElementById("start-video")
 
 startButton.addEventListener("click", () => {
     startButton.remove()
@@ -68,3 +69,9 @@ startButton.addEventListener("click", () => {
     document.body.append(yesButton)
     document.body.append(noButton)
 })
+
+// Event listener
+startVideoButton.addEventListener('click', function() {
+    // Vie video html
+    window.location.href = 'story-video.html'; 
+});
