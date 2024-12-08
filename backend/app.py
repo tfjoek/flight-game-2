@@ -44,6 +44,7 @@ def get_player_status(player_id):
             return jsonify(player)
     return jsonify({"error": "Player not found"}), 404
 
+
 # Palauttaa satunnaisen lentokentän tiedot
 @app.route('/random-airport', methods=['GET'])
 def random_airport():
@@ -116,38 +117,50 @@ def attack_airport(destination_icao):
     conn = create_connection()
     if conn:
         cursor = conn.cursor(dictionary=True)
-        
-        # Hakee pelaajan nykyisen sijainnin ja polttoaineen määrän
+
+        # Pelaajan nykyinen sijainti ja polttoaine
         player_query = "SELECT location, fuel FROM game WHERE id = %s"
-        cursor.execute(player_query, (1,))
+        cursor.execute(player_query, (1,))  # Pelaaja ID oletuksena 1
         player = cursor.fetchone()
-        
+
         if not player:
             return jsonify({"success": False, "error": "Player not found"}), 404
-        
+
         player_location = player['location']
         player_fuel = player['fuel']
 
-        # Hakee hyökkäyksen kohteena olevan lentokentän tiedot
+        # Tarkista lentokentän omistaja
+        owner_query = "SELECT owner FROM airport WHERE ident = %s"
+        cursor.execute(owner_query, (destination_icao,))
+        airport_owner = cursor.fetchone()
+
+        if not airport_owner:
+            return jsonify({"success": False, "error": "Target airport not found"}), 404
+
+        if airport_owner['owner'] == 'Finland':
+            # Jos lentokenttä on jo Suomen hallinnassa, estä hyökkäys
+            return jsonify({"success": False, "error": "Lentokenttä on jo sinun hallinnassasi!"}), 400
+
+        # Lentokenttien koordinaatit
         location_query = """
             SELECT ident, latitude_deg, longitude_deg 
             FROM airport WHERE ident IN (%s, %s)
         """
         cursor.execute(location_query, (player_location, destination_icao))
         airports = cursor.fetchall()
-        
+
         if len(airports) != 2:
             return jsonify({"success": False, "error": "Invalid airport data"}), 400
 
-        # Laskee etäisyyden pelaajan sijainnista hyökkäyksen kohteeseen
+        # Koordinaatit laskentaan
         coords = {airport['ident']: (airport['latitude_deg'], airport['longitude_deg']) for airport in airports}
         distance_km = geodesic(coords[player_location], coords[destination_icao]).km
-        
-        # Tarkistaa, riittääkö polttoaine hyökkäykseen
-        if player_fuel < distance_km:
-            return jsonify({"success": False, "error": "Ei tarpeeksi polttoainetta"}), 400
 
-        # Päivittää lentokentän omistajan ja pelaajan sijainnin sekä vähentää polttoaineen määrää
+        # Tarkista, riittääkö polttoaine
+        if player_fuel < distance_km:
+            return jsonify({"success": False, "error": "Not enough fuel"}), 400
+
+        # Päivitä lentokentän omistaja ja pelaajan sijainti
         update_query = "UPDATE airport SET owner = 'Finland' WHERE ident = %s"
         cursor.execute(update_query, (destination_icao,))
 
@@ -159,8 +172,9 @@ def attack_airport(destination_icao):
         conn.close()
 
         return jsonify({"success": True, "message": f"Attacked and captured {destination_icao}", "fuel_used": round(distance_km, 2)}), 200
-    
+
     return jsonify({"success": False, "error": "Database connection failed"}), 500
+
  
 
 if __name__ == "__main__":
