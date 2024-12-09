@@ -1,26 +1,26 @@
 function goHome() {
     window.location.href = '/';
+}
 
-}var map = L.map('map').setView([64, 25], 6);
+var map = L.map('map').setView([64, 25], 6);
 
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
 }).addTo(map);
-
 
 let playerLocation = null;
 
-// Nollaa pelin alkuperäiseen tilaan on refresh, muutetaan jossain vaiheessa
+// Nollaa pelin alkuperäiseen tilaan
 function resetGame() {
     fetch('/reset', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 console.log("Peli nollattu alkuasetuksiin.");
-                fetchPlayerStats(1); // Hae pelaajan tilastot
-                updateMapMarkers();  // Päivitä kartan markerit
+                fetchPlayerStats(); // Hae pelaajan tilastot
+                updateMapMarkers(); // Päivitä kartan markerit
                 updateControlStats(); // Päivitä hallintatilastot
             } else {
                 console.error("Pelin nollaus epäonnistui:", data.error);
@@ -35,8 +35,8 @@ function resetGame() {
 resetGame();
 
 // Hakee pelaajan tilastot palvelimelta ja päivittää käyttöliittymän
-function fetchPlayerStats(playerId) {
-    fetch(`/player/${playerId}`)
+function fetchPlayerStats() {
+    fetch(`/player/1`) // Pelaaja ID on oletuksena 1
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -44,12 +44,18 @@ function fetchPlayerStats(playerId) {
             } else {
                 playerLocation = data.location.trim(); // Tallennetaan pelaajan sijainti
                 console.log(`Pelaajan sijainti haettu: ${playerLocation}`);
-                document.getElementById('player-stats').innerHTML = `
-                    <div class="stat location"><b>Sijainti:</b> ${data.location}</div>
-                    <div class="stat fuel"><b>Polttoaine:</b> ${data.fuel} km</div>
-                    <div class="stat war-points"><b>Sotapisteet:</b> ${data.war_points}</div>
+                document.querySelector('.player-stats').innerHTML = `
+                    <h2>🎖️ OPERATIIVISET TIEDOT 🎖️</h2>
+                    <div class="stat-line">
+                        <span class="stat-icon">📍</span> Sijainti: <span class="value">${data.location}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-icon">⛽</span> Polttoaine: <span class="value">${data.fuel} km</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-icon">⭐</span> Sotapisteet: <span class="value">${data.war_points}</span>
+                    </div>
                 `;
-                updateMapMarkers(); // Päivitä kartan markerit
             }
         })
         .catch(error => {
@@ -60,14 +66,18 @@ function fetchPlayerStats(playerId) {
 // Päivittää kartan markerit ja lisää tiedot etäisyydestä
 function updateMapMarkers() {
     $.getJSON(`/locations_with_distances/${playerLocation}`, function(data) {
-        console.log("Lentokenttien ja etäisyyksien tiedot haettu:", data); 
         if (data.error) {
             alert(data.error);
         } else {
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+
             data.forEach(function(location) {
                 let markerColor;
 
-                // Määritä markerin väri omistajan mukaan
                 if (playerLocation && location.ident === playerLocation) {
                     markerColor = 'green'; // Pelaajan sijainti
                 } else if (location.owner === 'Finland') {
@@ -76,7 +86,6 @@ function updateMapMarkers() {
                     markerColor = 'red'; // Venäjän hallitsema
                 }
 
-                // Lisää marker kartalle
                 const marker = L.marker([location.latitude_deg, location.longitude_deg], {
                     icon: L.divIcon({
                         className: 'custom-icon',
@@ -84,14 +93,12 @@ function updateMapMarkers() {
                     })
                 }).addTo(map);
 
-                // Määritä popup-teksti
                 const controlText = location.owner === 'Russia' ? 
                     "Venäjän hallinnassa" : 
                     "Sinun hallinnassasi";
                 const difficultyStars = "★".repeat(location.difficulty);
                 const distanceText = `Etäisyys: ${location.distance_km.toFixed(2)} km`;
 
-                // Lisää popup tiedoilla ja hyökkäyspainikkeella
                 marker.bindPopup(`
                     <b>${location.name} ${difficultyStars}</b><br>
                     ${controlText}<br>
@@ -105,7 +112,7 @@ function updateMapMarkers() {
     });
 }
 
-// Päivittää hallinnan tilastot (Suomen ja Venäjän lentokenttien määrät)
+// Päivittää hallintatilastot
 function updateControlStats() {
     $.getJSON('/locations', function(data) {
         if (data.error) {
@@ -116,11 +123,20 @@ function updateControlStats() {
             const russiaAirports = totalAirports - finlandAirports;
             const liberationPercentage = ((finlandAirports / totalAirports) * 100).toFixed(2);
 
-            // Päivitä käyttöliittymä hallintatilastojen osalta
-            document.getElementById('control-stats').innerHTML = `
-                <div><b>Suomen Lentokentät:</b> ${finlandAirports}</div>
-                <div><b>Venäjän Lentokentät:</b> ${russiaAirports}</div>
-                <div><b>Vapautus:</b> ${liberationPercentage}%</div>
+            document.querySelector('.control-stats').innerHTML = `
+                <h2>🎯 TAISTELUTILANNE 🎯</h2>
+                <div class="stat-line">
+                    <span class="stat-icon">🇫🇮</span> Suomen Lentokentät: <span class="value">${finlandAirports}</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-icon">⚔️</span> Venäjän Lentokentät: <span class="value">${russiaAirports}</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">Vapautus: ${liberationPercentage}%</div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${liberationPercentage}%"></div>
+                    </div>
+                </div>
             `;
         }
     }).fail(function() {
@@ -135,10 +151,9 @@ function attackAirport(airportIdent) {
         .then(data => {
             if (data.success) {
                 alert(`Hyökkäsit ja lentokenttä ${airportIdent} on nyt Suomen hallinnassa!`);
-                console.log(`Polttoainetta käytetty: ${data.fuel_used} km`);
-                updateMapMarkers(); // Päivitä kartan markerit
-                updateControlStats(); // Päivitä hallintatilastot
-                fetchPlayerStats(1); // Päivitä pelaajan tilastot
+                updateMapMarkers();
+                updateControlStats();
+                fetchPlayerStats();
             } else {
                 alert(`Hyökkäys epäonnistui: ${data.error}`);
             }
@@ -150,4 +165,4 @@ function attackAirport(airportIdent) {
 
 // Päivittää tilastot ja hakee pelaajan alkuarvot
 updateControlStats();
-fetchPlayerStats(1); // Pelaaja ID = 1 oletuksena
+fetchPlayerStats();

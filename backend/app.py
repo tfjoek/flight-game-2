@@ -119,7 +119,7 @@ def attack_airport(destination_icao):
         cursor = conn.cursor(dictionary=True)
 
         # Pelaajan nykyinen sijainti ja polttoaine
-        player_query = "SELECT location, fuel FROM game WHERE id = %s"
+        player_query = "SELECT location, fuel, war_points FROM game WHERE id = %s"
         cursor.execute(player_query, (1,))  # Pelaaja ID oletuksena 1
         player = cursor.fetchone()
 
@@ -128,6 +128,7 @@ def attack_airport(destination_icao):
 
         player_location = player['location']
         player_fuel = player['fuel']
+        current_war_points = player['war_points']
 
         # Tarkista lentokentän omistaja
         owner_query = "SELECT owner FROM airport WHERE ident = %s"
@@ -164,16 +165,27 @@ def attack_airport(destination_icao):
         update_query = "UPDATE airport SET owner = 'Finland' WHERE ident = %s"
         cursor.execute(update_query, (destination_icao,))
 
-        update_player_query = "UPDATE game SET location = %s, fuel = fuel - %s WHERE id = %s"
+        # Päivitä pelaajan sijainti, polttoaine ja lisää sotapisteitä
+        update_player_query = """
+            UPDATE game 
+            SET location = %s, fuel = fuel - %s, war_points = war_points + 100 
+            WHERE id = %s
+        """
         cursor.execute(update_player_query, (destination_icao, distance_km, 1))
 
         conn.commit()
         cursor.close()
         conn.close()
 
-        return jsonify({"success": True, "message": f"Attacked and captured {destination_icao}", "fuel_used": round(distance_km, 2)}), 200
+        return jsonify({
+            "success": True,
+            "message": f"Attacked and captured {destination_icao}",
+            "fuel_used": round(distance_km, 2),
+            "added_war_points": 100
+        }), 200
 
     return jsonify({"success": False, "error": "Database connection failed"}), 500
+
 
  
 
