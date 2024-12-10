@@ -40,8 +40,28 @@
             </div>
         </div>
     </div>
-    <div id="map"></div>
 
+
+    <div id="combatModal" class="modal">
+        <div class="modal-content">
+            <h2>Taistelu!</h2>
+            <div class="health-bars">
+                <div class="health-container">
+                    <div id="playerHP" class="health-bar"></div>
+                </div>
+                <div class="health-container">
+                    <div id="enemyHP" class="health-bar"></div>
+                </div>
+            </div>
+            <div class="combat-controls">
+                <button id="attackBtn">Hyökkää</button>
+                <button id="defendBtn">Puolusta</button>
+                <button id="retreatBtn">Pakene</button>
+            </div>
+            <div id="combatLog" class="combat-log"></div>
+        </div>
+    </div>
+    <div id="map"></div>
     <script src="map/map.js"></script>
 </body>
 </html>
