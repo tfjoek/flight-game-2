@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>goodbye.</title>
+</head>
+<body>
+    <img src="pics/goodbye.png">
+    <script>
+        setTimeout(() => {
+            window.close();
+
+            if (!window.closed) {
+                document.body.innerHTML = "<h1>Please close the tab manually. Thank you!</h1>";
+            }
+        }, 50);
+    </script>
+</body>
+</html>

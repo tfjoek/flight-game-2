@@ -311,7 +311,12 @@ function endCombat(victory) {
     if (victory) {
         addCombatLog('Voitit taistelun! Lentokenttä on nyt sinun!');
         fetch(`/attack/${currentCombat.targetAirport}`, { method: 'POST' })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     setTimeout(() => {
@@ -319,9 +324,19 @@ function endCombat(victory) {
                         updateMapMarkers();
                         updateControlStats();
                         fetchPlayerStats();
+                    
+                        if (data.liberationPercentage === 100) {
+                            endScreen();
+                        }
                     }, 2000);
+                } else {
+                    console.error(data.error || 'Unknown error occurred');
                 }
+            })
+            .catch(error => {
+                console.error('Fetch failed:', error);
             });
+
     } else {
         addCombatLog('Hävisit taistelun!');
         setTimeout(() => {
@@ -330,13 +345,18 @@ function endCombat(victory) {
     }
 }
 
+function endScreen() {
+    alert('Onneksi olkoon! OPERAATIO://VIIMEINEN VALSSI onnistui!');
+    window.location.href = '/';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('attackBtn').addEventListener('click', playerAttack);
     document.getElementById('defendBtn').addEventListener('click', playerDefend);
     document.getElementById('retreatBtn').addEventListener('click', retreat);
 });
 
-// shop section
+// shop
 async function openStore() {
     const modal = document.getElementById('shopModal');
     modal.style.display = 'block';

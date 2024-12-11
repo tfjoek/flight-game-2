@@ -128,7 +128,6 @@ def attack_airport(destination_icao):
 
         player_location = player['location']
         player_fuel = player['fuel']
-        current_war_points = player['war_points']
 
         # Tarkista lentokentän omistaja
         owner_query = "SELECT owner FROM airport WHERE ident = %s"
@@ -177,11 +176,19 @@ def attack_airport(destination_icao):
         cursor.close()
         conn.close()
 
+        liberation_query = "SELECT COUNT(*) as total, SUM(CASE WHEN owner = 'Finland' THEN 1 ELSE 0 END) as finland_count FROM airport"
+        cursor.execute(liberation_query)
+        result = cursor.fetchone()
+        total_airports = result['total']
+        finland_airports = result['finland_count']
+        liberation_percentage = (finland_airports / total_airports) * 100
+
         return jsonify({
             "success": True,
             "message": f"Attacked and captured {destination_icao}",
             "fuel_used": round(distance_km, 2),
-            "added_war_points": 100
+            "added_war_points": 100,
+            "liberationPercentage": round(liberation_percentage, 2)  # Add this
         }), 200
 
     return jsonify({"success": False, "error": "Database connection failed"}), 500
@@ -249,7 +256,9 @@ def buy_fuel():
             conn.close()
     return jsonify({"error": "Database yhteys epäonnistui"}), 500
 
-
+@app.route('/goodbye')
+def byebye():
+    return send_from_directory('../frontend', 'goodbye.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -5,13 +5,12 @@ function startGame() {
 }
 
 function openSettings() {
-    alert("settings prompt");
+    alert("I DO NOTHING HAHAHAHAHAHA");
 }
 
 function quitGame() {
-    alert("quit game prompt!");
+    window.location.href = "/goodbye";
 }
-
 function openMap() {
-    window.location.href = "/map"
+    window.location.href = "/map";
 }
