@@ -39,10 +39,9 @@ nav {
     position: absolute;
     top: 0;
     left: 0;
-    width: 400px; /* Leveä stats-paneeli */
+    width: 420px; /* Leveä stats-paneeli */
     background-color: #1a2a1d; /* Tumma vihreä tausta */
-    border: 3px solid #122413; /* Tumma reunavihreä */
-    border-radius: 10px;
+
     padding: 20px;
     color: #c3e3bc; /* Vaalea teksti */
     font-family: 'Roboto', sans-serif;

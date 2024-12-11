@@ -67,64 +67,6 @@ function fetchPlayerStats() {
         });
 }
 
-// Päivittää kartan markerit ja lisää tiedot etäisyydestä
-function updateMapMarkers() {
-    if (!playerLocation) {
-        console.error("Player location not set");
-        return;
-    }
-
-    console.log("Updating markers with player location:", playerLocation);
-
-    $.getJSON(`/locations_with_distances/${playerLocation}`, function(data) {
-        if (data.error) {
-            alert(data.error);
-        } else {
-            // tyhjaa
-            map.eachLayer(function(layer) {
-                if (layer instanceof L.Marker) {
-                    map.removeLayer(layer);
-                }
-            });
-
-            // lisaa
-            data.forEach(function(location) {
-                let markerColor;
-
-                if (playerLocation && location.ident === playerLocation) {
-                    markerColor = 'green';
-                } else if (location.owner === 'Finland') {
-                    markerColor = 'blue';
-                } else {
-                    markerColor = 'red';
-                }
-
-                const marker = L.marker([location.latitude_deg, location.longitude_deg], {
-                    icon: L.divIcon({
-                        className: 'custom-icon',
-                        html: `<div style="background-color:${markerColor}; width:20px; height:20px; border-radius:50%;"></div>`
-                    })
-                }).addTo(map);
-
-                const controlText = location.owner === 'Russia' ? 
-                    "Venäjän hallinnassa" : 
-                    "Sinun hallinnassasi";
-                const difficultyStars = "★".repeat(location.difficulty);
-                const distanceText = `Etäisyys: ${location.distance_km.toFixed(2)} km`;
-
-                marker.bindPopup(`
-                    <b>${location.name} ${difficultyStars}</b><br>
-                    ${controlText}<br>
-                    ${distanceText}<br>
-                    <button onclick="attackAirport('${location.ident}')">Hyökkää</button>
-                `);
-            });
-        }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error("Failed to load locations:", textStatus, errorThrown);
-        alert("Virhe lentokenttien tietojen haussa.");
-    });
-}
 
 // Päivittää kartan markerit ja lisää tiedot etäisyydestä
 function updateMapMarkers() {
@@ -153,9 +95,9 @@ function updateMapMarkers() {
                 if (playerLocation && location.ident === playerLocation) {
                     markerColor = 'green';
                 } else if (location.owner === 'Finland') {
-                    markerColor = 'blue';
+                    markerColor = '#0664bc';
                 } else {
-                    markerColor = 'red';
+                    markerColor = '#d83424';
                 }
 
                 const marker = L.marker([location.latitude_deg, location.longitude_deg], {
