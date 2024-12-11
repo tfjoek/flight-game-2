@@ -345,7 +345,6 @@ async function openStore() {
         const response = await fetch('/shop');
         const items = await response.json();
 
-        // Check if we received any items
         if (Array.isArray(items) && items.length > 0) {
             const storeItemsDiv = document.getElementById('store-items');
             storeItemsDiv.innerHTML = items.map(item => `
@@ -370,10 +369,8 @@ document.getElementById('close-shop').addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-// Function to handle item purchase (you can adjust this logic based on your needs)
 function buyItem(itemId) {
     alert('Purchased item with ID: ' + itemId);
-    // You can implement the logic to handle purchasing, like reducing the player's currency
 }
 
 async function buyFuel(amount) {
@@ -400,8 +397,6 @@ async function buyFuel(amount) {
         alert('Tapahtui virhe yrittäessä ostaa polttoainetta');
     }
 }
-
-
 
 updateControlStats();
 fetchPlayerStats();
