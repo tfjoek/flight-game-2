@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operaatio://Viimeinen Valssi</title>
+    <!-- Kartan tyylitiedosto -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <!-- Karttakirjasto -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- jQuery käytettäväksi tiedon hakemiseen ja muokkaamiseen -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Sivun omat tyylitiedostot -->
     <link rel="stylesheet" href="map/map.css">
 </head>
 <body>
+    <!-- Pelaajan ja pelin tilastot -->
     <div class="military-stats-container">
+        <!-- Pelaajan tilastot -->
         <div class="stats-panel player-stats">
             <h2>🎖️ OPERATIIVISET TIEDOT 🎖️</h2>
             <div class="stat-line">
@@ -20,10 +26,11 @@
                 <span class="stat-icon">⛽</span> Polttoaine: <span class="value">500 km</span>
             </div>
             <div class="stat-line">
-                <span class="stat-icon">⭐</span>   Sotapisteet: <span class="value">0</span>
+                <span class="stat-icon">⭐</span> Sotapisteet: <span class="value">0</span>
             </div>
         </div>
 
+        <!-- Pelin hallintatilanne -->
         <div class="stats-panel control-stats">
             <h2>🎯 TAISTELUTILANNE 🎯</h2>
             <div class="stat-line">
@@ -33,18 +40,21 @@
                 <span class="stat-icon">⚔️</span> Venäjän Lentokentät: <span class="value">17</span>
             </div>
             <div class="progress-container">
+                <!-- Vapautusprosentin näyttäminen -->
                 <div class="progress-label">Vapautus: 5.56%</div>
                 <div class="progress-bar">
+                    <!-- Vapautuksen edistyminen graafisena palkkina -->
                     <div class="progress" style="width: 5.56%"></div>
                 </div>
             </div>
         </div>
     </div>
 
-
+    <!-- Taistelumodal, joka näytetään, kun pelaaja aloittaa taistelun -->
     <div id="combatModal" class="modal">
         <div class="modal-content">
             <h2>Taistelu!</h2>
+            <!-- Pelaajan ja vihollisen terveyspalkit -->
             <div class="health-bars">
                 <div class="health-container">
                     <div id="playerHP" class="health-bar"></div>
@@ -53,15 +63,21 @@
                     <div id="enemyHP" class="health-bar"></div>
                 </div>
             </div>
+            <!-- Taistelun hallintapainikkeet -->
             <div class="combat-controls">
                 <button id="attackBtn">Hyökkää</button>
                 <button id="defendBtn">Puolusta</button>
                 <button id="retreatBtn">Pakene</button>
             </div>
+            <!-- Lokitiedot taistelun tapahtumista -->
             <div id="combatLog" class="combat-log"></div>
         </div>
     </div>
+    
+    <!-- Karttaelementti -->
     <div id="map"></div>
+
+    <!-- Sivun toiminnallisuuden sisältävä JavaScript-tiedosto -->
     <script src="map/map.js"></script>
 </body>
 </html>

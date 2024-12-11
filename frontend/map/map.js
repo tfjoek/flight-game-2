@@ -316,7 +316,7 @@ function addCombatLog(message) {
     log.scrollTop = log.scrollHeight;
 }
 
-// Combat actionit
+// Combat actionit yap
 function playerAttack() {
     if (!currentCombat.isPlayerTurn) return;
     
