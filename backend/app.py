@@ -186,8 +186,75 @@ def attack_airport(destination_icao):
 
     return jsonify({"success": False, "error": "Database connection failed"}), 500
 
+@app.route('/shop', methods=['GET'])
+def shop_items():
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT name, description, effect, price FROM item"
+        cursor.execute(query)
+        items = cursor.fetchall()
+        cursor.close()
+        conn.close()
 
+        if items:
+            return jsonify(items)
+    return jsonify({"error": "No items found"}), 404
  
+@app.route('/buy_fuel', methods=['POST'])
+def buy_fuel():
+    data = request.get_json()
+    fuel_amount = data.get('fuel_amount')
+
+    # Ensure the amount is valid
+    if fuel_amount not in [50, 100]:
+        return jsonify({"error": "Invalid fuel amount"}), 400
+
+    # Determine the cost
+    cost = 25 if fuel_amount == 50 else 50
+
+    conn = create_connection()
+    if conn:
+        try:
+            cursor = conn.cursor(dictionary=True)
+
+            # Fetch current fuel and war_points for id 1
+            cursor.execute("SELECT fuel, war_points FROM game WHERE id = 1")
+            result = cursor.fetchone()
+
+            if not result:
+                return jsonify({"error": "Käyttäjä tietoa ei löydetty"}), 404
+
+            current_fuel = result['fuel']
+            current_war_points = result['war_points']
+
+            # Check if the user has enough war_points
+            if current_war_points < cost:
+                return jsonify({"error": "Ei tarpeeksi sotapisteitä"}), 400
+
+            # Update the database
+            new_fuel = current_fuel + fuel_amount
+            new_war_points = current_war_points - cost
+
+            cursor.execute(
+                "UPDATE game SET fuel = %s, war_points = %s WHERE id = 1",
+                (new_fuel, new_war_points)
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            return jsonify({"message": f"Onnistuneesti ostettu {fuel_amount}km polttoainetta"}), 200
+
+        except Exception as e:
+            conn.rollback()
+            return jsonify({"error": str(e)}), 500
+
+        finally:
+            conn.close()
+    return jsonify({"error": "Database yhteys epäonnistui"}), 500
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

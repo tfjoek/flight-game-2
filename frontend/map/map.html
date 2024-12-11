@@ -20,13 +20,13 @@
         <div class="stats-panel player-stats">
             <h2>🎖️ OPERATIIVISET TIEDOT 🎖️</h2>
             <div class="stat-line">
-                <span class="stat-icon">📍</span> Sijainti: <span class="value">EFTP</span>
+                <span class="stat-icon">📍</span> Sijainti: <span class="value"></span>
             </div>
             <div class="stat-line">
-                <span class="stat-icon">⛽</span> Polttoaine: <span class="value">500 km</span>
+                <span class="stat-icon">⛽</span> Polttoaine: <span class="value"></span>
             </div>
             <div class="stat-line">
-                <span class="stat-icon">⭐</span> Sotapisteet: <span class="value">0</span>
+                <span class="stat-icon">⭐</span> Sotapisteet: <span class="value"></span>
             </div>
         </div>
 
@@ -34,19 +34,37 @@
         <div class="stats-panel control-stats">
             <h2>🎯 TAISTELUTILANNE 🎯</h2>
             <div class="stat-line">
-                <span class="stat-icon">🇫🇮</span> Suomen Lentokentät: <span class="value">1</span>
+                <span class="stat-icon">🇫🇮</span> Suomen Lentokentät: <span class="value"></span>
             </div>
             <div class="stat-line">
-                <span class="stat-icon">⚔️</span> Venäjän Lentokentät: <span class="value">17</span>
+                <span class="stat-icon">⚔️</span> Venäjän Lentokentät: <span class="value"></span>
             </div>
             <div class="progress-container">
                 <!-- Vapautusprosentin näyttäminen -->
-                <div class="progress-label">Vapautus: 5.56%</div>
+                <div class="progress-label"></div>
                 <div class="progress-bar">
                     <!-- Vapautuksen edistyminen graafisena palkkina -->
-                    <div class="progress" style="width: 5.56%"></div>
+                    <div class="progress"></div>
                 </div>
             </div>
+        </div>
+
+        <!-- KAUPPA nappi-->
+        <div class="shop-icon" onclick="openStore()">🏪</div>
+    </div>
+
+    <!-- shop modal -->
+    <div id="shopModal" class="modal">
+        <div class="modal-content" id="shop-modal-content">
+            <button class="close-shop" id="close-shop">X</button>
+            <h2>Kauppa!</h2>
+            <h3>Polttoaine</h3>
+            <div class="fuel-buttons">
+                <button onclick="buyFuel(50)">Osta 50km polttoainetta (25 sotapistettä)</button>
+                <button onclick="buyFuel(100)">Osta 100km polttoainetta (50 sotapistettä)</button>
+            </div>
+            <h3>Päivitykset</h3>
+            <div class="store-items" id="store-items"></div>
         </div>
     </div>
 
@@ -75,7 +93,7 @@
     </div>
     
     <!-- Karttaelementti -->
-    <div id="map"></div>
+    <div id="map" class="map"></div>
 
     <!-- Sivun toiminnallisuuden sisältävä JavaScript-tiedosto -->
     <script src="map/map.js"></script>

@@ -335,5 +335,73 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('defendBtn').addEventListener('click', playerDefend);
     document.getElementById('retreatBtn').addEventListener('click', retreat);
 });
+
+// shop section
+async function openStore() {
+    const modal = document.getElementById('shopModal');
+    modal.style.display = 'block';
+
+    try {
+        const response = await fetch('/shop');
+        const items = await response.json();
+
+        // Check if we received any items
+        if (Array.isArray(items) && items.length > 0) {
+            const storeItemsDiv = document.getElementById('store-items');
+            storeItemsDiv.innerHTML = items.map(item => `
+                <div class="shop-item">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <p>Hinta: ${item.price} sotapistettä</p>
+                    <button class="buyButton" onclick="buyItem(${item.id})">Osta</button>
+                </div>
+            `).join('');
+        } else {
+            document.getElementById('store-items').innerHTML = "<p>No items available.</p>";
+        }
+    } catch (error) {
+        console.error('Error loading shop items:', error);
+        document.getElementById('store-items').innerHTML = "<p>Error loading items. Please try again later.</p>";
+    }
+}
+
+document.getElementById('close-shop').addEventListener('click', () => {
+    const modal = document.getElementById('shopModal');
+    modal.style.display = 'none';
+});
+
+// Function to handle item purchase (you can adjust this logic based on your needs)
+function buyItem(itemId) {
+    alert('Purchased item with ID: ' + itemId);
+    // You can implement the logic to handle purchasing, like reducing the player's currency
+}
+
+async function buyFuel(amount) {
+    try {
+        const response = await fetch('/buy_fuel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fuel_amount: amount }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);
+
+            fetchPlayerStats();
+        } else {
+            alert(result.error);
+        }
+    } catch (error) {
+        console.error('Virhe polttoaineen ostossa:', error);
+        alert('Tapahtui virhe yrittäessä ostaa polttoainetta');
+    }
+}
+
+
+
 updateControlStats();
 fetchPlayerStats();

@@ -27,7 +27,7 @@ nav {
     background-color: #476747; /* Hover-vihreä */
 }
 
-#map {
+.map {
     position: absolute;
     top: 0;
     left: 445px; /* Leveys stats-paneelille */
@@ -145,10 +145,13 @@ nav {
     margin: 15% auto;
     padding: 20px;
     border: 3px solid #122413;
-    width: 80%;
-    max-width: 600px;
+    width: 100%;
+    max-width: 1000px;
     color: #c3e3bc;
     border-radius: 10px;
+    max-height: 90vh;
+    position: relative;
+    overflow-y: auto;
 }
 
 .health-bars {
@@ -188,3 +191,99 @@ nav {
     border-radius: 5px;
 }
 
+/* shop */
+
+.shop-icon {
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15vw;
+    line-height: 1;
+    overflow: visible;
+}
+
+.shop-icon:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.store-items {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 30px;
+    column-gap: 20px;
+    padding: 10px;
+  }
+  
+  .shop-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #718f7e;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    max-height: 300px;
+  }
+  
+ #shop-modal-content {
+    margin: 1.5% auto;
+    
+  }
+
+  .close-shop {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #ccc;
+  }
+
+  .close-shop:hover {
+    color: #888;
+  }
+
+  .buyButton {
+    margin-top: auto;
+    background: #ccc;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .buyButton:hover {
+    background: #888;
+  }
+
+.fuel-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .fuel-buttons button {
+    flex: 1;
+    background: #ccc;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .fuel-buttons button:hover {
+    background: #888;
+  }
