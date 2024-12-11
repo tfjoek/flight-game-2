@@ -206,11 +206,9 @@ def buy_fuel():
     data = request.get_json()
     fuel_amount = data.get('fuel_amount')
 
-    # Ensure the amount is valid
     if fuel_amount not in [50, 100]:
         return jsonify({"error": "Invalid fuel amount"}), 400
 
-    # Determine the cost
     cost = 25 if fuel_amount == 50 else 50
 
     conn = create_connection()
@@ -218,7 +216,6 @@ def buy_fuel():
         try:
             cursor = conn.cursor(dictionary=True)
 
-            # Fetch current fuel and war_points for id 1
             cursor.execute("SELECT fuel, war_points FROM game WHERE id = 1")
             result = cursor.fetchone()
 
@@ -228,11 +225,9 @@ def buy_fuel():
             current_fuel = result['fuel']
             current_war_points = result['war_points']
 
-            # Check if the user has enough war_points
             if current_war_points < cost:
                 return jsonify({"error": "Ei tarpeeksi sotapisteitä"}), 400
 
-            # Update the database
             new_fuel = current_fuel + fuel_amount
             new_war_points = current_war_points - cost
 
