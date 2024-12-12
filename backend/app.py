@@ -167,7 +167,7 @@ def attack_airport(destination_icao):
         # Päivitä pelaajan sijainti, polttoaine ja lisää sotapisteitä
         update_player_query = """
             UPDATE game 
-            SET location = %s, fuel = fuel - %s, war_points = war_points + 100 
+            SET location = %s, fuel = fuel - %s, war_points = war_points + 200 
             WHERE id = %s
         """
         cursor.execute(update_player_query, (destination_icao, distance_km, 1))
