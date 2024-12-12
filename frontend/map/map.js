@@ -139,6 +139,10 @@ function updateControlStats() {
             const russiaAirports = totalAirports - finlandAirports;
             const liberationPercentage = ((finlandAirports / totalAirports) * 100).toFixed(2);
 
+            if(liberationPercentage == 100) {
+                endScreen();
+            }
+
             document.querySelector('.control-stats').innerHTML = `
                 <h2>🎯 TAISTELUTILANNE 🎯</h2>
                 <div class="stat-line">
