@@ -394,7 +394,7 @@ document.getElementById('close-shop').addEventListener('click', () => {
 });
 
 function buyItem(itemId) {
-    alert('Purchased item with ID: ' + itemId);
+    alert('virhe!: ' + itemId);
 }
 
 async function buyFuel(amount) {
